@@ -27,6 +27,7 @@
 services:
   nominatim:
     image: mediagis/nominatim:4.5
+    restart: no
     volumes:
       - ./data/postgres:/var/lib/postgresql/16/main:rw
       - ./data/imports:/nominatim/data
@@ -64,6 +65,7 @@ services:
   photon:
     image: ghcr.io/drolx/photon:latest
     pull_policy: always
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
@@ -76,6 +78,5 @@ services:
 
     volumes:
       - ./data/photon:/photon/photon_data
-    restart: unless-stopped
     ports:
       - "127.0.0.1:2322:2322"
