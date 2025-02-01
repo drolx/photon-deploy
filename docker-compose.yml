@@ -1,0 +1,64 @@
+# Copyright (c) 2025 <Godwin peter. O>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+#  Project: photon-deploy
+#  Author: Godwin peter. O (me@godwin.dev)
+#  Created At: Sat 01 Feb 2025 12:57:13
+#  Modified By: Godwin peter. O (me@godwin.dev)
+#  Modified At: Sat 01 Feb 2025 12:57:13
+
+services:
+  nominatim:
+    image: mediagis/nominatim:4.5
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/16/main:rw
+      - ./data/imports:/nominatim/data
+    environment:
+      - "PBF_PATH=/nominatim/data/all.osm.pbf"
+      - "THREADS=8"
+      - "FREEZE=true"
+      - "UPDATE_MODE=none"
+      - "IMPORT_STYLE=full"
+      - "REVERSE_ONLY=false"
+      - "IMPORT_WIKIPEDIA=false"
+      - "NOMINATIM_PASSWORD=nominatim"
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G
+        reservations:
+          cpus: "0.1"
+          memory: 100M
+    ulimits:
+      rtprio: 95
+      memlock: -1
+      nproc: 1024000
+      nofile:
+        soft: 1024000
+        hard: 1024000
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1m
+      timeout: 3m
+      retries: 5
+    ports:
+      - "8095:8080"
+      - "15432:5432"
