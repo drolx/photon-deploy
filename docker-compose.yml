@@ -32,7 +32,7 @@ services:
       - ./data/imports:/nominatim/data
     environment:
       - "PBF_PATH=/nominatim/data/all.osm.pbf"
-      - "THREADS=8"
+      - "THREADS=16"
       - "FREEZE=true"
       - "UPDATE_MODE=none"
       - "IMPORT_STYLE=full"
@@ -43,7 +43,7 @@ services:
       resources:
         limits:
           cpus: "4"
-          memory: 8G
+          memory: 16G
         reservations:
           cpus: "0.1"
           memory: 100M
@@ -58,7 +58,24 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 1m
       timeout: 3m
-      retries: 5
+      retries: 15
     ports:
-      - "8095:8080"
-      - "15432:5432"
+      - "127.0.0.1:8095:8080"
+  photon:
+    image: ghcr.io/drolx/photon:latest
+    pull_policy: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PHOTON_VERSION=${PHOTON_VERSION}
+    environment:
+      - "NOMINATIM_HOST=nominatim"
+      - "NOMINATIM_USER=nominatim"
+      - "NOMINATIM_PASSWORD=nominatim"
+
+    volumes:
+      - ./data/photon:/photon/photon_data
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:2322:2322"
