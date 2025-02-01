@@ -24,12 +24,17 @@
 #  Modified By: Godwin peter. O (me@godwin.dev)
 #  Modified At: Sat 01 Feb 2025 12:57:13
 
+networks:
+  default:
+    name: dokploy-network
+    external: true
+
 services:
   nominatim:
     image: mediagis/nominatim:4.5
-    restart: no
+    restart: unless-stopped
     volumes:
-      - ./data/postgres:/var/lib/postgresql/16/main:rw
+      - ./data/postgres:/var/lib/postgresql/12/main:rw
       - ./data/imports:/nominatim/data
     environment:
       - "PBF_PATH=/nominatim/data/all.osm.pbf"
@@ -38,13 +43,13 @@ services:
       - "UPDATE_MODE=none"
       - "IMPORT_STYLE=full"
       - "REVERSE_ONLY=false"
-      - "IMPORT_WIKIPEDIA=false"
+      - "IMPORT_WIKIPEDIA=true"
       - "NOMINATIM_PASSWORD=nominatim"
     deploy:
       resources:
         limits:
           cpus: "4"
-          memory: 16G
+          memory: 8G
         reservations:
           cpus: "0.1"
           memory: 100M
