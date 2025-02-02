@@ -34,7 +34,7 @@ services:
     image: mediagis/nominatim:4.5
     restart: unless-stopped
     volumes:
-      - ./data/postgres:/var/lib/postgresql/12/main:rw
+      - ./data/postgres:/var/lib/postgresql/16/main:rw
       - ./data/imports:/nominatim/data
     environment:
       - "PBF_PATH=/nominatim/data/all.osm.pbf"
@@ -43,7 +43,7 @@ services:
       - "UPDATE_MODE=none"
       - "IMPORT_STYLE=full"
       - "REVERSE_ONLY=false"
-      - "IMPORT_WIKIPEDIA=true"
+      - "IMPORT_WIKIPEDIA=false"
       - "NOMINATIM_PASSWORD=nominatim"
     deploy:
       resources:
